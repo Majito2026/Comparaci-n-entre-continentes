@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Football Analytics – Comparación Entre Continentes</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+  <style>
+    /* ===== CSS VARIABLES ===== */
+    :root {
+      --bg-primary:    #050d1a;
+      --bg-card:       #0a1628;
+      --bg-card2:      #0d1f3c;
+      --accent-cyan:   #00d4ff;
+      --accent-green:  #00ff88;
+      --accent-blue:   #1a6bff;
+      --accent-gold:   #ffd700;
+      --text-primary:  #e8f4ff;
+      --text-muted:    #6a8caf;
+      --border:        rgba(0,212,255,.15);
+      --glow-cyan:     0 0 20px rgba(0,212,255,.4);
+      --glow-green:    0 0 20px rgba(0,255,136,.4);
+      --card-radius:   16px;
+      --transition:    .3s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: .5;
+    }
+
+    section, header, footer { position: relative; z-index: 1; }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 3px; }
+
+    /* ===== NAVBAR ===== */
+    #navbar {
+      position: fixed; top: 0; width: 100%;
+      background: rgba(5,13,26,.92);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 64px;
+      z-index: 1000;
+      transition: var(--transition);
+    }
+
+    .nav-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.3rem; font-weight: 800;
+      color: var(--accent-cyan);
+      letter-spacing: 2px;
+      text-shadow: var(--glow-cyan);
+      display: flex; align-items: center; gap: .6rem;
+    }
+
+    .nav-logo span { color: var(--accent-green); }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500; font-size: .9rem;
+      letter-spacing: .5px;
+      transition: color var(--transition);
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: var(--accent-cyan);
+      transition: width var(--transition);
+    }
+
+    .nav-links a:hover { color: var(--accent-cyan); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--accent-cyan); border-radius: 2px; transition: var(--transition); }
+
+    /* ===== HERO ===== */
+    #inicio {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 100px 2rem 4rem;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,107,255,.18) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,212,255,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 20% 80%, rgba(0,255,136,.07) 0%, transparent 60%);
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(0,212,255,.1);
+      border: 1px solid rgba(0,212,255,.3);
+      color: var(--accent-cyan);
+      font-size: .8rem; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: .4rem 1.2rem; border-radius: 50px;
+      margin-bottom: 1.5rem;
+      animation: fadeInDown .8s ease both;
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.2rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp .9s ease .2s both;
+    }
+
+    .hero-title .line1 { display: block; color: var(--text-primary); }
+    .hero-title .line2 {
+      display: block;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      max-width: 680px; margin: 0 auto 2.5rem;
+      color: var(--text-muted);
+      font-size: 1.1rem; font-weight: 300;
+      animation: fadeInUp .9s ease .35s both;
+    }
+
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: .6rem;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      color: #fff; font-weight: 600; font-size: .95rem;
+      padding: .85rem 2rem; border-radius: 50px;
+      text-decoration: none;
+      box-shadow: 0 0 30px rgba(26,107,255,.4);
+      transition: var(--transition);
+      animation: fadeInUp .9s ease .5s both;
+    }
+    .hero-cta:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(26,107,255,.6); }
+
+    /* Floating ball SVG decoration */
+    .hero-orb {
+      position: absolute; width: 360px; height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(26,107,255,.12), transparent 70%);
+      border: 1px solid rgba(0,212,255,.08);
+      top: 50%; right: 8%; transform: translateY(-50%);
+      pointer-events: none;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    /* ===== SECTION COMMON ===== */
+    .section {
+      padding: 6rem 2rem;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    .section-label {
+      font-size: .78rem; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--accent-cyan);
+      margin-bottom: .6rem;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .section-divider {
+      width: 60px; height: 3px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+      border-radius: 2px;
+      margin-bottom: 3rem;
+    }
+
+    /* ===== DESCRIPTION SECTION ===== */
+    #descripcion { background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-card) 100%); }
+
+    .desc-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+      align-items: center;
+    }
+
+    .desc-text p {
+      color: var(--text-muted); font-weight: 300;
+      margin-bottom: 1.2rem; font-size: 1rem;
+    }
+
+    .desc-text p strong { color: var(--accent-cyan); font-weight: 600; }
+
+    .desc-highlight {
+      border-left: 3px solid var(--accent-green);
+      padding: 1rem 1.5rem;
+      background: rgba(0,255,136,.05);
+      border-radius: 0 8px 8px 0;
+      color: var(--text-primary);
+      font-size: .95rem;
+      margin-top: 1.5rem;
+    }
+
+    .desc-visual {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+
+    .mini-stat {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.4rem;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .mini-stat:hover { border-color: var(--accent-cyan); transform: translateY(-4px); }
+    .mini-stat .val { font-family: 'Orbitron', monospace; font-size: 1.8rem; font-weight: 800; color: var(--accent-cyan); }
+    .mini-stat .lbl { font-size: .8rem; color: var(--text-muted); margin-top: .3rem; }
+
+    /* ===== TÉCNICAS ===== */
+    #tecnica { background: var(--bg-primary); }
+
+    .tecnicas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.5rem; }
+
+    .tec-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: var(--transition);
+      position: relative; overflow: hidden;
+    }
+
+    .tec-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+      opacity: 0; transition: opacity var(--transition);
+    }
+
+    .tec-card:hover { border-color: rgba(0,212,255,.4); transform: translateY(-6px); box-shadow: var(--glow-cyan); }
+    .tec-card:hover::before { opacity: 1; }
+
+    .tec-icon {
+      font-size: 2.5rem; margin-bottom: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      width: 64px; height: 64px;
+      background: rgba(0,212,255,.08);
+      border-radius: 16px; margin: 0 auto 1.2rem;
+      border: 1px solid rgba(0,212,255,.15);
+    }
+
+    .tec-card h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem; font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: .6rem;
+    }
+
+    .tec-card p { color: var(--text-muted); font-size: .9rem; }
+
+    /* ===== OBJETIVO ===== */
+    #objetivo {
+      background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card2) 100%);
+    }
+
+    .objetivo-box {
+      border: 1px solid rgba(0,212,255,.2);
+      border-radius: 20px;
+      padding: 3rem;
+      text-align: center;
+      background: rgba(0,212,255,.03);
+      position: relative; overflow: hidden;
+    }
+
+    .objetivo-box::after {
+      content: '⚽';
+      position: absolute; right: -20px; bottom: -30px;
+      font-size: 10rem; opacity: .04;
+    }
+
+    .objetivo-box p {
+      font-size: 1.25rem; font-weight: 300;
+      color: var(--text-primary); max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    .objetivo-box p strong { color: var(--accent-cyan); font-weight: 600; }
+
+    /* ===== FUNCIONES ===== */
+    #funciones { background: var(--bg-primary); }
+
+    .func-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; }
+
+    .func-card {
+      display: flex; align-items: flex-start; gap: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.4rem;
+      transition: var(--transition);
+    }
+
+    .func-card:hover { border-color: var(--accent-green); transform: translateX(4px); box-shadow: var(--glow-green); }
+
+    .func-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem; font-weight: 900;
+      color: var(--accent-green);
+      opacity: .5;
+      min-width: 36px;
+    }
+
+    .func-card h4 { color: var(--text-primary); font-weight: 600; margin-bottom: .3rem; }
+    .func-card p { color: var(--text-muted); font-size: .88rem; }
+
+    /* ===== STATS SECTION ===== */
+    #estadisticas { background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-primary) 100%); }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
+
+    .stat-card {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: var(--transition);
+      position: relative; overflow: hidden;
+    }
+
+    .stat-card:nth-child(1) .stat-val { color: var(--accent-cyan); }
+    .stat-card:nth-child(2) .stat-val { color: var(--accent-green); }
+    .stat-card:nth-child(3) .stat-val { color: #ff6b6b; }
+    .stat-card:nth-child(4) .stat-val { color: var(--accent-gold); }
+    .stat-card:nth-child(5) .stat-val { color: #a78bfa; }
+    .stat-card:nth-child(6) .stat-val { color: #fb923c; }
+
+    .stat-card:hover { transform: translateY(-6px); border-color: rgba(0,212,255,.3); }
+
+    .stat-icon { font-size: 1.6rem; margin-bottom: .8rem; }
+
+    .stat-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.4rem; font-weight: 900;
+      line-height: 1;
+      margin-bottom: .4rem;
+    }
+
+    .stat-label { color: var(--text-muted); font-size: .85rem; font-weight: 500; }
+
+    .stat-bar {
+      height: 3px; background: rgba(255,255,255,.08); border-radius: 2px;
+      margin-top: 1rem; overflow: hidden;
+    }
+
+    .stat-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+      border-radius: 2px;
+      animation: growBar 1.5s ease .5s both;
+    }
+
+    /* ===== SELECCIONES ===== */
+    #selecciones { background: var(--bg-primary); }
+
+    .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+
+    .team-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 1.8rem;
+      transition: var(--transition);
+      position: relative; overflow: hidden;
+    }
+
+    .team-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 60%, rgba(0,212,255,.04));
+      pointer-events: none;
+    }
+
+    .team-card:hover { transform: translateY(-8px); box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+
+    .team-flag { font-size: 3rem; margin-bottom: .8rem; line-height: 1; }
+
+    .team-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.15rem; font-weight: 800;
+      color: var(--text-primary); margin-bottom: .2rem;
+    }
+
+    .team-continent {
+      font-size: .8rem; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      padding: .25rem .8rem; border-radius: 50px;
+      display: inline-block;
+    }
+
+    .cont-sa  { background: rgba(255,107,107,.12); color: #ff6b6b; border: 1px solid rgba(255,107,107,.3); }
+    .cont-eu  { background: rgba(26,107,255,.12);  color: var(--accent-blue);  border: 1px solid rgba(26,107,255,.3); }
+    .cont-as  { background: rgba(0,212,255,.12);   color: var(--accent-cyan);  border: 1px solid rgba(0,212,255,.3); }
+    .cont-af  { background: rgba(255,215,0,.1);    color: var(--accent-gold);  border: 1px solid rgba(255,215,0,.3); }
+
+    .team-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .8rem; margin-top: 1rem; }
+
+    .metric {
+      background: rgba(255,255,255,.03);
+      border-radius: 8px; padding: .7rem .5rem;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .metric .m-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem; font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    .metric .m-lbl { font-size: .7rem; color: var(--text-muted); margin-top: .2rem; }
+
+    /* ===== GRAFICAS ===== */
+    #graficas { background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-primary) 100%); }
+
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+    .chart-box {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 1.8rem;
+      transition: var(--transition);
+    }
+
+    .chart-box:hover { border-color: rgba(0,212,255,.3); }
+
+    .chart-box.wide { grid-column: span 2; }
+
+    .chart-title {
+      font-family: 'Orbitron', monospace;
+      font-size: .95rem; font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: 1.2rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+
+    .chart-title::before {
+      content: '';
+      width: 8px; height: 8px;
+      background: var(--accent-cyan);
+      border-radius: 2px; display: inline-block;
+    }
+
+    canvas { max-height: 320px; }
+
+    /* ===== TABLA ===== */
+    #comparacion { background: var(--bg-primary); }
+
+    .table-wrapper { overflow-x: auto; border-radius: var(--card-radius); border: 1px solid var(--border); }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead tr {
+      background: linear-gradient(90deg, rgba(26,107,255,.3), rgba(0,212,255,.1));
+    }
+
+    th {
+      font-family: 'Orbitron', monospace;
+      font-size: .78rem; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      color: var(--accent-cyan);
+      padding: 1rem 1.4rem; text-align: left;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+
+    tbody tr:hover { background: rgba(0,212,255,.04); }
+
+    td { padding: 1rem 1.4rem; color: var(--text-primary); font-size: .92rem; }
+
+    .rank-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      font-family: 'Orbitron', monospace; font-size: .8rem; font-weight: 800;
+    }
+
+    .rank-1 { background: rgba(255,215,0,.2); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+    .rank-2 { background: rgba(192,192,192,.1); color: #c0c0c0; border: 1px solid #c0c0c0; }
+    .rank-3 { background: rgba(205,127,50,.1); color: #cd7f32; border: 1px solid #cd7f32; }
+    .rank-4, .rank-5, .rank-6 { background: rgba(0,212,255,.08); color: var(--text-muted); border: 1px solid var(--border); }
+
+    .acc-bar {
+      display: flex; align-items: center; gap: .8rem;
+    }
+
+    .acc-bg {
+      flex: 1; height: 6px; background: rgba(255,255,255,.06);
+      border-radius: 3px; overflow: hidden;
+    }
+
+    .acc-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+      border-radius: 3px;
+    }
+
+    /* ===== CONCLUSIONES ===== */
+    #conclusiones { background: var(--bg-card); }
+
+    .concl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+    .concl-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 1.8rem;
+      transition: var(--transition);
+    }
+
+    .concl-card:hover { border-color: rgba(0,212,255,.3); }
+
+    .concl-card h4 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem; color: var(--accent-cyan);
+      margin-bottom: .8rem; display: flex; align-items: center; gap: .6rem;
+    }
+
+    .concl-card p { color: var(--text-muted); font-size: .92rem; line-height: 1.7; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #020912;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem; font-weight: 800;
+      color: var(--accent-cyan);
+      letter-spacing: 2px;
+      margin-bottom: .8rem;
+    }
+
+    .footer-logo span { color: var(--accent-green); }
+
+    footer p {
+      color: var(--text-muted); font-size: .88rem;
+      margin-bottom: .4rem;
+    }
+
+    footer .footer-author {
+      color: var(--accent-cyan); font-weight: 600;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); opacity: .6; }
+      50%       { transform: translateY(-50%) scale(1.05); opacity: 1; }
+    }
+
+    @keyframes growBar {
+      from { width: 0; }
+      to   { width: 100%; }
+    }
+
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Reveal on scroll */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .desc-grid, .charts-grid, .concl-grid { grid-template-columns: 1fr; }
+      .chart-box.wide { grid-column: span 1; }
+      .hero-orb { display: none; }
+    }
+
+    @media (max-width: 640px) {
+      #navbar { padding: 0 1.2rem; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: rgba(5,13,26,.98); padding: 1.5rem; gap: 1.2rem; border-bottom: 1px solid var(--border); }
+      .nav-links.open { display: flex; }
+      .hamburger { display: flex; }
+      .section { padding: 4rem 1.2rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<header id="navbar">
+  <div class="nav-logo">⚽ Football<span>Analytics</span></div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#graficas">Comparación</a></li>
+    <li><a href="#estadisticas">Estadísticas</a></li>
+    <li><a href="#selecciones">Selecciones</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section id="inicio">
+  <div class="hero-orb"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="hero-badge">⚡ Análisis de Datos · FIFA Analytics 2026</div>
+    <h1 class="hero-title">
+      <span class="line1">Comparación Entre</span>
+      <span class="line2">Continentes</span>
+    </h1>
+    <p class="hero-subtitle">
+      Proyecto de análisis comparativo enfocado en evaluar el desempeño de selecciones de fútbol
+      según su continente mediante métricas estadísticas y visualización de datos.
+    </p>
+    <a href="#descripcion" class="hero-cta">Explorar Análisis →</a>
+  </div>
+</section>
+
+<!-- ===== DESCRIPCIÓN ===== -->
+<section id="descripcion" class="section">
+  <div class="container">
+    <div class="section-label">01 — Descripción</div>
+    <h2 class="section-title">¿Qué analiza el proyecto?</h2>
+    <div class="section-divider"></div>
+
+    <div class="desc-grid reveal">
+      <div class="desc-text">
+        <p>
+          Este proyecto realiza un <strong>análisis comparativo profundo</strong> entre las principales selecciones nacionales de fútbol, agrupadas por continente. El objetivo central es identificar patrones de desempeño y tendencias competitivas a través de métricas cuantitativas.
+        </p>
+        <p>
+          Las selecciones son evaluadas con base en datos reales agregados: victorias acumuladas, goles anotados, precisión de pase y posesión de balón. Estas métricas permiten construir perfiles estadísticos representativos de cada región del mundo.
+        </p>
+        <p>
+          La importancia del <strong>análisis de datos en el fútbol moderno</strong> es creciente. Clubes y federaciones utilizan la analítica para tomar decisiones tácticas, detectar talentos y planificar entrenamientos con evidencia estadística.
+        </p>
+        <p>
+          Este dashboard transforma datos brutos en <strong>visualizaciones interactivas</strong> que facilitan la comprensión de las diferencias y similitudes entre continentes, haciendo accesible la ciencia de datos deportivos.
+        </p>
+        <div class="desc-highlight">
+          💡 "El fútbol del siglo XXI se gana con datos: el análisis estadístico es tan importante como el talento en el campo."
+        </div>
+      </div>
+
+      <div class="desc-visual">
+        <div class="mini-stat reveal">
+          <div class="val">6</div>
+          <div class="lbl">Selecciones analizadas</div>
+        </div>
+        <div class="mini-stat reveal">
+          <div class="val">4</div>
+          <div class="lbl">Continentes representados</div>
+        </div>
+        <div class="mini-stat reveal">
+          <div class="val">12+</div>
+          <div class="lbl">Métricas estadísticas</div>
+        </div>
+        <div class="mini-stat reveal">
+          <div class="val">4</div>
+          <div class="lbl">Tipos de gráficas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TÉCNICA ===== -->
+<section id="tecnica" class="section">
+  <div class="container">
+    <div class="section-label">02 — Metodología</div>
+    <h2 class="section-title">Técnicas Utilizadas</h2>
+    <div class="section-divider"></div>
+
+    <div class="tecnicas-grid">
+      <div class="tec-card reveal">
+        <div class="tec-icon">📊</div>
+        <h3>Análisis Comparativo</h3>
+        <p>Evaluación sistemática de métricas entre selecciones para identificar diferencias de rendimiento entre regiones geográficas.</p>
+      </div>
+      <div class="tec-card reveal">
+        <div class="tec-icon">📈</div>
+        <h3>Visualización de Datos</h3>
+        <p>Transformación de datos tabulares en representaciones gráficas interactivas: barras, radar, circular y líneas de tendencia.</p>
+      </div>
+      <div class="tec-card reveal">
+        <div class="tec-icon">🖥️</div>
+        <h3>Dashboard Interactivo</h3>
+        <p>Interfaz web dinámica construida con Chart.js que permite explorar los datos de forma intuitiva y visual en tiempo real.</p>
+      </div>
+      <div class="tec-card reveal">
+        <div class="tec-icon">⚽</div>
+        <h3>Estadísticas Deportivas</h3>
+        <p>Métricas especializadas del fútbol: victorias, goles, precisión de pase y posesión de balón como indicadores clave de rendimiento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== OBJETIVO ===== -->
+<section id="objetivo" class="section">
+  <div class="container">
+    <div class="section-label">03 — Propósito</div>
+    <h2 class="section-title">Objetivo General</h2>
+    <div class="section-divider"></div>
+
+    <div class="objetivo-box reveal">
+      <p>
+        <strong>Comparar el desempeño de selecciones de fútbol</strong> según su continente,
+        utilizando métricas agregadas y gráficos estadísticos para identificar tendencias
+        competitivas, patrones de juego diferenciados y el nivel de desarrollo del fútbol
+        en cada región del mundo, contribuyendo al campo del análisis deportivo con datos.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FUNCIONES ===== -->
+<section id="funciones" class="section">
+  <div class="container">
+    <div class="section-label">04 — Funcionalidades</div>
+    <h2 class="section-title">Funciones del Proyecto</h2>
+    <div class="section-divider"></div>
+
+    <div class="func-grid">
+      <div class="func-card reveal">
+        <div class="func-num">01</div>
+        <div>
+          <h4>Clasificar equipos por continente</h4>
+          <p>Agrupa cada selección nacional según su confederación continental (UEFA, CONMEBOL, AFC, CAF) para análisis regional.</p>
+        </div>
+      </div>
+      <div class="func-card reveal">
+        <div class="func-num">02</div>
+        <div>
+          <h4>Calcular métricas agregadas</h4>
+          <p>Computa promedios, totales y proporciones de victorias, goles, posesión y precisión por selección y continente.</p>
+        </div>
+      </div>
+      <div class="func-card reveal">
+        <div class="func-num">03</div>
+        <div>
+          <h4>Comparar estadísticas</h4>
+          <p>Contrasta directamente las métricas entre selecciones de distintos continentes para detectar ventajas competitivas.</p>
+        </div>
+      </div>
+      <div class="func-card reveal">
+        <div class="func-num">04</div>
+        <div>
+          <h4>Gráficos de barras</h4>
+          <p>Visualiza victorias y goles con gráficas de barras agrupadas que facilitan la comparación directa entre equipos.</p>
+        </div>
+      </div>
+      <div class="func-card reveal">
+        <div class="func-num">05</div>
+        <div>
+          <h4>Gráficos radar</h4>
+          <p>Representa perfiles multidimensionales de cada selección mostrando fortalezas y debilidades en múltiples ejes.</p>
+        </div>
+      </div>
+      <div class="func-card reveal">
+        <div class="func-num">06</div>
+        <div>
+          <h4>Analizar tendencias competitivas</h4>
+          <p>Examina la evolución del rendimiento a lo largo del tiempo para identificar selecciones en ascenso o declive.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ESTADÍSTICAS GENERALES ===== -->
+<section id="estadisticas" class="section">
+  <div class="container">
+    <div class="section-label">05 — Métricas</div>
+    <h2 class="section-title">Estadísticas Generales</h2>
+    <div class="section-divider"></div>
+
+    <div class="stats-grid">
+      <div class="stat-card reveal">
+        <div class="stat-icon">🌍</div>
+        <div class="stat-val" data-target="6">0</div>
+        <div class="stat-label">Selecciones Analizadas</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-val" data-target="412">0</div>
+        <div class="stat-label">Victorias Registradas</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:85%"></div></div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-icon">⚽</div>
+        <div class="stat-val" data-target="1248">0</div>
+        <div class="stat-label">Goles Anotados</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:78%"></div></div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-val" data-target="84">0</div>
+        <div class="stat-label">Precisión Promedio %</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:84%"></div></div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-icon">🔄</div>
+        <div class="stat-val" data-target="57">0</div>
+        <div class="stat-label">Promedio Posesión %</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:57%"></div></div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-icon">📈</div>
+        <div class="stat-val" data-target="76">0</div>
+        <div class="stat-label">Rendimiento Ofensivo %</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:76%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SELECCIONES ===== -->
+<section id="selecciones" class="section">
+  <div class="container">
+    <div class="section-label">06 — Equipos</div>
+    <h2 class="section-title">Selecciones Analizadas</h2>
+    <div class="section-divider"></div>
+
+    <div class="teams-grid">
+
+      <div class="team-card reveal" style="border-color: rgba(255,107,107,.2);">
+        <div class="team-flag">🇦🇷</div>
+        <div class="team-name">Argentina</div>
+        <div class="team-continent cont-sa">Sudamérica</div>
+        <div class="team-metrics">
+          <div class="metric"><div class="m-val">82</div><div class="m-lbl">Victorias</div></div>
+          <div class="metric"><div class="m-val">248</div><div class="m-lbl">Goles</div></div>
+          <div class="metric"><div class="m-val">85%</div><div class="m-lbl">Precisión</div></div>
+        </div>
+      </div>
+
+      <div class="team-card reveal" style="border-color: rgba(255,215,0,.15);">
+        <div class="team-flag">🇧🇷</div>
+        <div class="team-name">Brasil</div>
+        <div class="team-continent cont-sa">Sudamérica</div>
+        <div class="team-metrics">
+          <div class="metric"><div class="m-val">76</div><div class="m-lbl">Victorias</div></div>
+          <div class="metric"><div class="m-val">231</div><div class="m-lbl">Goles</div></div>
+          <div class="metric"><div class="m-val">87%</div><div class="m-lbl">Precisión</div></div>
+        </div>
+      </div>
+
+      <div class="team-card reveal" style="border-color: rgba(26,107,255,.2);">
+        <div class="team-flag">🇫🇷</div>
+        <div class="team-name">Francia</div>
+        <div class="team-continent cont-eu">Europa</div>
+        <div class="team-metrics">
+          <div class="metric"><div class="m-val">88</div><div class="m-lbl">Victorias</div></div>
+          <div class="metric"><div class="m-val">267</div><div class="m-lbl">Goles</div></div>
+          <div class="metric"><div class="m-val">88%</div><div class="m-lbl">Precisión</div></div>
+        </div>
+      </div>
+
+      <div class="team-card reveal" style="border-color: rgba(26,107,255,.15);">
+        <div class="team-flag">🇩🇪</div>
+        <div class="team-name">Alemania</div>
+        <div class="team-continent cont-eu">Europa</div>
+        <div class="team-metrics">
+          <div class="metric"><div class="m-val">79</div><div class="m-lbl">Victorias</div></div>
+          <div class="metric"><div class="m-val">244</div><div class="m-lbl">Goles</div></div>
+          <div class="metric"><div class="m-val">86%</div><div class="m-lbl">Precisión</div></div>
+        </div>
+      </div>
+
+      <div class="team-card reveal" style="border-color: rgba(0,212,255,.2);">
+        <div class="team-flag">🇯🇵</div>
+        <div class="team-name">Japón</div>
+        <div class="team-continent cont-as">Asia</div>
+        <div class="team-metrics">
+          <div class="metric"><div class="m-val">52</div><div class="m-lbl">Victorias</div></div>
+          <div class="metric"><div class="m-val">148</div><div class="m-lbl">Goles</div></div>
+          <div class="metric"><div class="m-val">82%</div><div class="m-lbl">Precisión</div></div>
+        </div>
+      </div>
+
+      <div class="team-card reveal" style="border-color: rgba(255,215,0,.15);">
+        <div class="team-flag">🇲🇦</div>
+        <div class="team-name">Marruecos</div>
+        <div class="team-continent cont-af">África</div>
+        <div class="team-metrics">
+          <div class="metric"><div class="m-val">35</div><div class="m-lbl">Victorias</div></div>
+          <div class="metric"><div class="m-val">110</div><div class="m-lbl">Goles</div></div>
+          <div class="metric"><div class="m-val">79%</div><div class="m-lbl">Precisión</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== GRÁFICAS ===== -->
+<section id="graficas" class="section">
+  <div class="container">
+    <div class="section-label">07 — Visualización</div>
+    <h2 class="section-title">Gráficas Comparativas</h2>
+    <div class="section-divider"></div>
+
+    <div class="charts-grid">
+
+      <!-- Barras: Victorias -->
+      <div class="chart-box reveal">
+        <div class="chart-title">Victorias por Selección</div>
+        <canvas id="chartBarVictorias"></canvas>
+      </div>
+
+      <!-- Circular: Distribución -->
+      <div class="chart-box reveal">
+        <div class="chart-title">Distribución por Continente</div>
+        <canvas id="chartPie"></canvas>
+      </div>
+
+      <!-- Radar -->
+      <div class="chart-box reveal">
+        <div class="chart-title">Comparación Estadística Radar</div>
+        <canvas id="chartRadar"></canvas>
+      </div>
+
+      <!-- Línea: Evolución -->
+      <div class="chart-box reveal">
+        <div class="chart-title">Evolución de Rendimiento</div>
+        <canvas id="chartLine"></canvas>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== TABLA COMPARATIVA ===== -->
+<section id="comparacion" class="section">
+  <div class="container">
+    <div class="section-label">08 — Comparación</div>
+    <h2 class="section-title">Tabla Comparativa</h2>
+    <div class="section-divider"></div>
+
+    <div class="table-wrapper reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>Selección</th>
+            <th>Continente</th>
+            <th>Victorias</th>
+            <th>Goles</th>
+            <th>Precisión</th>
+            <th>Ranking</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🇫🇷 Francia</td>
+            <td><span class="team-continent cont-eu" style="font-size:.75rem;padding:.2rem .7rem;">Europa</span></td>
+            <td>88</td>
+            <td>267</td>
+            <td>
+              <div class="acc-bar">
+                <div class="acc-bg"><div class="acc-fill" style="width:88%"></div></div>
+                <span>88%</span>
+              </div>
+            </td>
+            <td><span class="rank-badge rank-1">1</span></td>
+          </tr>
+          <tr>
+            <td>🇦🇷 Argentina</td>
+            <td><span class="team-continent cont-sa" style="font-size:.75rem;padding:.2rem .7rem;">Sudamérica</span></td>
+            <td>82</td>
+            <td>248</td>
+            <td>
+              <div class="acc-bar">
+                <div class="acc-bg"><div class="acc-fill" style="width:85%"></div></div>
+                <span>85%</span>
+              </div>
+            </td>
+            <td><span class="rank-badge rank-2">2</span></td>
+          </tr>
+          <tr>
+            <td>🇩🇪 Alemania</td>
+            <td><span class="team-continent cont-eu" style="font-size:.75rem;padding:.2rem .7rem;">Europa</span></td>
+            <td>79</td>
+            <td>244</td>
+            <td>
+              <div class="acc-bar">
+                <div class="acc-bg"><div class="acc-fill" style="width:86%"></div></div>
+                <span>86%</span>
+              </div>
+            </td>
+            <td><span class="rank-badge rank-3">3</span></td>
+          </tr>
+          <tr>
+            <td>🇧🇷 Brasil</td>
+            <td><span class="team-continent cont-sa" style="font-size:.75rem;padding:.2rem .7rem;">Sudamérica</span></td>
+            <td>76</td>
+            <td>231</td>
+            <td>
+              <div class="acc-bar">
+                <div class="acc-bg"><div class="acc-fill" style="width:87%"></div></div>
+                <span>87%</span>
+              </div>
+            </td>
+            <td><span class="rank-badge rank-4">4</span></td>
+          </tr>
+          <tr>
+            <td>🇯🇵 Japón</td>
+            <td><span class="team-continent cont-as" style="font-size:.75rem;padding:.2rem .7rem;">Asia</span></td>
+            <td>52</td>
+            <td>148</td>
+            <td>
+              <div class="acc-bar">
+                <div class="acc-bg"><div class="acc-fill" style="width:82%"></div></div>
+                <span>82%</span>
+              </div>
+            </td>
+            <td><span class="rank-badge rank-5">5</span></td>
+          </tr>
+          <tr>
+            <td>🇲🇦 Marruecos</td>
+            <td><span class="team-continent cont-af" style="font-size:.75rem;padding:.2rem .7rem;">África</span></td>
+            <td>35</td>
+            <td>110</td>
+            <td>
+              <div class="acc-bar">
+                <div class="acc-bg"><div class="acc-fill" style="width:79%"></div></div>
+                <span>79%</span>
+              </div>
+            </td>
+            <td><span class="rank-badge rank-6">6</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONCLUSIONES ===== -->
+<section id="conclusiones" class="section">
+  <div class="container">
+    <div class="section-label">09 — Conclusiones</div>
+    <h2 class="section-title">Conclusiones del Análisis</h2>
+    <div class="section-divider"></div>
+
+    <div class="concl-grid">
+
+      <div class="concl-card reveal">
+        <h4>🌍 Dominio Europeo</h4>
+        <p>Europa lidera el análisis comparativo con Francia y Alemania ocupando las dos primeras posiciones del ranking. El ecosistema de ligas competitivas como la Ligue 1 y la Bundesliga ha contribuido a desarrollar selecciones altamente técnicas con altos índices de precisión y goles.</p>
+      </div>
+
+      <div class="concl-card reveal">
+        <h4>🏆 Sudamérica como potencia global</h4>
+        <p>Argentina y Brasil confirman el poderío histórico sudamericano. Con métricas de precisión que superan el 85%, y una producción goleadora notable, CONMEBOL se consolida como el principal competidor de UEFA a nivel mundial, ratificado con los recientes títulos mundiales.</p>
+      </div>
+
+      <div class="concl-card reveal">
+        <h4>📈 Asia: crecimiento sostenido</h4>
+        <p>Japón representa un caso de estudio sobre desarrollo futbolístico acelerado. Su enfoque en la técnica, disciplina táctica y el fortalecimiento de la J-League han elevado su nivel competitivo, siendo actualmente uno de los equipos más sólidos de la Confederación Asiática.</p>
+      </div>
+
+      <div class="concl-card reveal">
+        <h4>⭐ África: potencial en ascenso</h4>
+        <p>Marruecos, con su histórico cuarto lugar en el Mundial 2022, demuestra que África tiene el potencial para competir a nivel mundial. La exportación de talento a las mejores ligas europeas y la mejora de infraestructura son factores clave de su crecimiento estadístico.</p>
+      </div>
+
+      <div class="concl-card reveal">
+        <h4>📊 Importancia del análisis estadístico</h4>
+        <p>Este proyecto evidencia que las métricas estadísticas ofrecen una visión objetiva del rendimiento futbolístico. La combinación de indicadores como victorias, goles y precisión permite una evaluación multidimensional superior a observaciones subjetivas.</p>
+      </div>
+
+      <div class="concl-card reveal">
+        <h4>🔮 Tendencias observadas</h4>
+        <p>Se observa una tendencia global hacia la convergencia competitiva: selecciones de Asia y África acortan distancias con las potencias tradicionales. La globalización de datos, entrenadores y jugadores acelera este proceso de nivelación competitiva entre continentes.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-logo">⚽ Football<span>Analytics</span></div>
+  <p>Análisis Comparativo de Selecciones de Fútbol por Continente</p>
+  <p class="footer-author">Integrante: Maria José Ortiz Bohórquez</p>
+  <p style="margin-top:.8rem;font-size:.8rem;">© 2026 Football Analytics · Todos los derechos reservados</p>
+</footer>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+  /* ---- Hamburger Menu ---- */
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+
+  /* ---- Scroll Reveal ---- */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  /* ---- Count-up Animation ---- */
+  const statVals = document.querySelectorAll('.stat-val[data-target]');
+  const countObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const el = e.target;
+        const target = +el.dataset.target;
+        let current = 0;
+        const step = Math.ceil(target / 60);
+        const timer = setInterval(() => {
+          current = Math.min(current + step, target);
+          el.textContent = current;
+          if (current >= target) clearInterval(timer);
+        }, 25);
+        countObs.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  statVals.forEach(el => countObs.observe(el));
+
+  /* ---- Chart.js Global Defaults ---- */
+  Chart.defaults.color = '#6a8caf';
+  Chart.defaults.borderColor = 'rgba(0,212,255,0.08)';
+  Chart.defaults.font.family = "'Exo 2', sans-serif";
+
+  const COLORS = {
+    cyan:   'rgba(0,212,255,',
+    green:  'rgba(0,255,136,',
+    blue:   'rgba(26,107,255,',
+    red:    'rgba(255,107,107,',
+    gold:   'rgba(255,215,0,',
+    purple: 'rgba(167,139,250,',
+    orange: 'rgba(251,146,60,',
+  };
+
+  const teams = ['Argentina','Brasil','Francia','Alemania','Japón','Marruecos'];
+  const colorsArr = [
+    COLORS.red, COLORS.gold, COLORS.blue, COLORS.cyan, COLORS.green, COLORS.orange
+  ];
+
+  /* ---- A. Barras: Victorias ---- */
+  new Chart(document.getElementById('chartBarVictorias'), {
+    type: 'bar',
+    data: {
+      labels: teams,
+      datasets: [{
+        label: 'Victorias',
+        data: [82, 76, 88, 79, 52, 35],
+        backgroundColor: colorsArr.map(c => c + '0.7)'),
+        borderColor:     colorsArr.map(c => c + '1)'),
+        borderWidth: 1,
+        borderRadius: 8,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { display: false }, tooltip: { callbacks: {
+        label: ctx => ` ${ctx.parsed.y} victorias`
+      }}},
+      scales: {
+        x: { grid: { color: 'rgba(0,212,255,0.05)' } },
+        y: { grid: { color: 'rgba(0,212,255,0.05)' }, beginAtZero: true, max: 120 }
+      },
+      animation: { duration: 1200, easing: 'easeInOutQuart' }
+    }
+  });
+
+  /* ---- B. Radar ---- */
+  new Chart(document.getElementById('chartRadar'), {
+    type: 'radar',
+    data: {
+      labels: ['Victorias','Goles','Precisión','Posesión','Defensa','Táctica'],
+      datasets: [
+        { label: 'Argentina', data: [82,78,85,60,75,80], borderColor: COLORS.red+'1)', backgroundColor: COLORS.red+'0.1)', pointBackgroundColor: COLORS.red+'1)', borderWidth: 2 },
+        { label: 'Francia',   data: [88,90,88,65,82,88], borderColor: COLORS.blue+'1)', backgroundColor: COLORS.blue+'0.1)', pointBackgroundColor: COLORS.blue+'1)', borderWidth: 2 },
+        { label: 'Japón',     data: [52,55,82,70,70,75], borderColor: COLORS.cyan+'1)', backgroundColor: COLORS.cyan+'0.08)', pointBackgroundColor: COLORS.cyan+'1)', borderWidth: 2 },
+        { label: 'Marruecos', data: [35,42,79,55,80,72], borderColor: COLORS.gold+'1)', backgroundColor: COLORS.gold+'0.07)', pointBackgroundColor: COLORS.gold+'1)', borderWidth: 2 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { position: 'bottom', labels: { padding: 16, font: { size: 11 } } } },
+      scales: {
+        r: {
+          angleLines: { color: 'rgba(0,212,255,0.1)' },
+          grid:        { color: 'rgba(0,212,255,0.08)' },
+          pointLabels: { color: '#6a8caf', font: { size: 12 } },
+          ticks:       { display: false }, min: 0, max: 100
+        }
+      },
+      animation: { duration: 1400, easing: 'easeInOutQuart' }
+    }
+  });
+
+  /* ---- C. Circular: Distribución ---- */
+  new Chart(document.getElementById('chartPie'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Europa','Sudamérica','Asia','África'],
+      datasets: [{
+        data: [2, 2, 1, 1],
+        backgroundColor: [
+          COLORS.blue+'0.8)',
+          COLORS.red+'0.8)',
+          COLORS.cyan+'0.8)',
+          COLORS.gold+'0.8)'
+        ],
+        borderColor: [
+          COLORS.blue+'1)',
+          COLORS.red+'1)',
+          COLORS.cyan+'1)',
+          COLORS.gold+'1)'
+        ],
+        borderWidth: 2,
+        hoverOffset: 12,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      cutout: '62%',
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 20, font: { size: 12 } } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} equipos` } }
+      },
+      animation: { duration: 1200, animateScale: true }
+    }
+  });
+
+  /* ---- D. Línea: Evolución ---- */
+  new Chart(document.getElementById('chartLine'), {
+    type: 'line',
+    data: {
+      labels: ['2018','2019','2020','2021','2022','2023','2024','2025'],
+      datasets: [
+        {
+          label: 'Argentina', data: [72,74,76,78,80,82,83,84],
+          borderColor: COLORS.red+'1)', backgroundColor: COLORS.red+'0.1)',
+          tension: 0.4, fill: true, pointRadius: 4, pointHoverRadius: 7,
+          borderWidth: 2.5,
+        },
+        {
+          label: 'Francia', data: [80,82,84,85,86,88,89,90],
+          borderColor: COLORS.blue+'1)', backgroundColor: COLORS.blue+'0.1)',
+          tension: 0.4, fill: true, pointRadius: 4, pointHoverRadius: 7,
+          borderWidth: 2.5,
+        },
+        {
+          label: 'Japón', data: [40,43,46,48,50,52,55,57],
+          borderColor: COLORS.cyan+'1)', backgroundColor: COLORS.cyan+'0.08)',
+          tension: 0.4, fill: true, pointRadius: 4, pointHoverRadius: 7,
+          borderWidth: 2.5,
+        },
+        {
+          label: 'Marruecos', data: [20,22,25,28,30,33,35,37],
+          borderColor: COLORS.gold+'1)', backgroundColor: COLORS.gold+'0.07)',
+          tension: 0.4, fill: true, pointRadius: 4, pointHoverRadius: 7,
+          borderWidth: 2.5,
+        },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 16, font: { size: 11 } } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} pts` } }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(0,212,255,0.05)' } },
+        y: { grid: { color: 'rgba(0,212,255,0.05)' }, beginAtZero: false }
+      },
+      animation: { duration: 1600, easing: 'easeInOutQuart' }
+    }
+  });
+
+  /* ---- Active nav link on scroll ---- */
+  const sections = document.querySelectorAll('section[id]');
+  const navAs = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navAs.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent-cyan)' : '';
+    });
+  });
+</script>
+
+</body>
+</html>
