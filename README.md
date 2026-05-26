@@ -32,6 +32,7 @@ Selecciones Analizadas
 - Argentina 🇦🇷
 - Brasil 🇧🇷
 - Francia 🇫🇷
+- España 🇪🇸
 - Alemania 🇩🇪
 - Japón 🇯🇵
 - Marruecos 🇲🇦
@@ -61,6 +62,20 @@ Características de la Página
 Capturas del Proyecto
 
 Aquí se agregarán capturas de pantalla de la página web y las gráficas del proyecto.
+
+<img width="1595" height="542" alt="image" src="https://github.com/user-attachments/assets/84c5facd-96d8-4d07-a32b-9de204b77bc7" />
+<img width="1715" height="586" alt="image" src="https://github.com/user-attachments/assets/b516cf82-6f79-4c8c-b8de-f10b7ad678ba" />
+<img width="1202" height="863" alt="image" src="https://github.com/user-attachments/assets/a05e60dc-024b-4639-a9fe-324f260f6fb1" />
+<img width="835" height="469" alt="image" src="https://github.com/user-attachments/assets/3c7204ee-7e0d-4cbd-b306-df0fe0a1405f" />
+<img width="1380" height="726" alt="image" src="https://github.com/user-attachments/assets/ce80e2bb-4aa3-4170-8f79-1dcb3931e6f2" />
+<img width="1173" height="642" alt="image" src="https://github.com/user-attachments/assets/6b331ac4-4554-4969-8e4b-dbba993b9b23" />
+<img width="1045" height="708" alt="image" src="https://github.com/user-attachments/assets/23f00f22-ee2a-4d98-b4fb-957727772845" />
+
+
+
+
+
+
 
 
 
