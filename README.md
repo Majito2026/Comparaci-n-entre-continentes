@@ -70,6 +70,6 @@ Maria José Ortiz Bohórquez
 
 ---
 
-# 📅 Año
+# Año
 
 2026
