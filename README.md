@@ -1,27 +1,24 @@
-# ⚽ Comparación Entre Continentes
+Comparación Entre Continentes
 
-## 📌 Descripción del Proyecto
+escripción del Proyecto
 
 Este proyecto consiste en un análisis comparativo del desempeño de selecciones de fútbol según su continente utilizando visualización de datos y estadísticas deportivas.
 
 La página web permite comparar selecciones internacionales mediante gráficos dinámicos y métricas estadísticas relacionadas con competiciones internacionales.
 
----
 
-# 🎯 Objetivo General
+Objetivo General
 
 Comparar el rendimiento de selecciones de fútbol según su continente mediante análisis comparativo y visualización de datos.
 
----
 
-# ⚙️ Tecnologías Utilizadas
+Tecnologías Utilizadas
 
 - HTML
 - GitHub Pages
 
----
 
-# 📊 Funciones del Proyecto
+Funciones del Proyecto
 
 - Clasificar equipos por continente.
 - Comparar estadísticas entre selecciones.
@@ -29,9 +26,8 @@ Comparar el rendimiento de selecciones de fútbol según su continente mediante 
 - Analizar tendencias competitivas.
 - Mostrar métricas deportivas.
 
----
 
-# 🌍 Selecciones Analizadas
+Selecciones Analizadas
 
 - Argentina 🇦🇷
 - Brasil 🇧🇷
@@ -40,9 +36,8 @@ Comparar el rendimiento de selecciones de fútbol según su continente mediante 
 - Japón 🇯🇵
 - Marruecos 🇲🇦
 
----
 
-# 📈 Fuente de Datos
+Fuente de Datos
 
 Los datos utilizados fueron tomados y adaptados a partir de:
 
@@ -52,9 +47,8 @@ Los datos utilizados fueron tomados y adaptados a partir de:
 - Kaggle datasets
 - FIFA Official Statistics
 
----
 
-# 🖥️ Características de la Página
+Características de la Página
 
 - Dashboard interactivo
 - Diseño moderno y responsivo
@@ -62,15 +56,15 @@ Los datos utilizados fueron tomados y adaptados a partir de:
 - Visualización comparativa
 - Interfaz estilo FIFA Analytics
 
----
 
-# 📷 Capturas del Proyecto
+
+Capturas del Proyecto
 
 Aquí se agregarán capturas de pantalla de la página web y las gráficas del proyecto.
 
----
 
-# 👩‍💻 Integrante
+
+Integrante
 
 Maria José Ortiz Bohórquez
 
