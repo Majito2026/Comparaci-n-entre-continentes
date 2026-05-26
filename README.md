@@ -70,6 +70,17 @@ Aquí se agregarán capturas de pantalla de la página web y las gráficas del p
 <img width="1380" height="726" alt="image" src="https://github.com/user-attachments/assets/ce80e2bb-4aa3-4170-8f79-1dcb3931e6f2" />
 <img width="1173" height="642" alt="image" src="https://github.com/user-attachments/assets/6b331ac4-4554-4969-8e4b-dbba993b9b23" />
 <img width="1045" height="708" alt="image" src="https://github.com/user-attachments/assets/23f00f22-ee2a-4d98-b4fb-957727772845" />
+<img width="1327" height="751" alt="image" src="https://github.com/user-attachments/assets/ec950959-2476-4ac3-9f08-f7575c469e0d" />
+
+
+También pueden obtener más datos a través de los siguientes enlaces:
+
+https://www.kaggle.com/datasets/martj42/international-football-results-from-1872-to-2017?
+https://en.wikipedia.org/wiki/Men%27s_Olympic_football_tournament_records_and_statistics
+https://en.wikipedia.org/wiki/2011_Copa_Am%C3%A9rica
+https://www.olympics.com/en/olympic-games/paris-2024/results/football
+https://www.sofascore.com/football/tournament/world/olympic-games/436#id:59243
+
 
 
 
