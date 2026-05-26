@@ -1,6 +1,6 @@
 Comparación Entre Continentes
 
-escripción del Proyecto
+Descripción del Proyecto
 
 Este proyecto consiste en un análisis comparativo del desempeño de selecciones de fútbol según su continente utilizando visualización de datos y estadísticas deportivas.
 
