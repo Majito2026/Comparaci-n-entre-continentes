@@ -1,0 +1,133 @@
+BITÁCORA DEL PROYECTO
+
+Proyecto:
+
+Comparación Entre Continentes
+
+Integrante:
+
+María José Ortiz Bohórquez
+
+Año: 2026
+
+
+Introducción
+
+La presente bitácora tiene como finalidad mostrar el proceso de desarrollo del proyecto “Comparación Entre Continentes”, enfocado en el análisis comparativo del desempeño de selecciones de fútbol según su continente mediante visualización de datos y estadísticas deportivas.
+
+Durante el desarrollo del proyecto se trabajó en la investigación de información deportiva, organización de datos, diseño de la interfaz web, implementación de gráficas dinámicas y documentación del repositorio.
+
+
+Planeación del Proyecto
+
+En esta etapa se definió la temática principal del proyecto. Se decidió trabajar sobre fútbol y análisis estadístico debido al interés por el deporte y la tecnología.
+
+Se planteó como objetivo principal comparar selecciones de diferentes continentes utilizando gráficos y métricas visuales.
+
+También se comenzó a investigar sobre herramientas para crear visualizaciones interactivas.
+
+
+Investigación de Información
+
+Se realizó una búsqueda de datasets y estadísticas deportivas relacionadas con:
+
+* FIFA World Cup
+* Fútbol internacional
+* Juegos Olímpicos
+* Estadísticas de selecciones
+
+Las principales fuentes utilizadas fueron:
+
+* Kaggle
+* FIFA Official Statistics
+* Olympics Football Statistics
+* ESPN Football Stats
+
+Durante esta etapa también se analizaron ejemplos de dashboards deportivos y páginas de análisis de datos.
+
+Diseño de la Página Web
+
+Se inició el desarrollo de la página web utilizando HTML y CSS.
+
+Se trabajó en:
+
+* Estructura de la página
+* Diseño visual
+* Colores
+* Organización de apartados
+* Estilo dashboard deportivo
+
+Se decidió utilizar un diseño oscuro con colores azul, cyan y verde para dar una apariencia más moderna y tecnológica.
+
+Desarrollo de Gráficas
+
+Se implementaron gráficas dinámicas utilizando JavaScript y la librería Chart.js.
+
+Las gráficas agregadas fueron:
+
+* Gráfico de barras
+* Gráfico radar
+* Gráfico lineal
+* Estadísticas comparativas
+
+También se añadieron datos relacionados con selecciones como:
+
+* Argentina
+* Brasil
+* Francia
+* Alemania
+* Japón
+* Marruecos
+
+Organización de Estadísticas
+
+Se organizaron las estadísticas y métricas deportivas para representar el rendimiento internacional de las selecciones.
+
+Se añadieron apartados relacionados con:
+
+* Victorias
+* Goles
+* Precisión
+* Rendimiento internacional
+* Comparación entre continentes
+
+Además, se realizaron ajustes visuales para mejorar la presentación de los gráficos y tarjetas estadísticas.
+
+Día 6 – Desarrollo del Repositorio
+
+Se creó el repositorio en GitHub para almacenar el proyecto.
+
+En esta etapa se añadieron:
+
+* Archivo HTML
+* README
+* Capturas del proyecto
+* Poster
+* Documentación
+
+También se configuró GitHub Pages para publicar la página web de manera online.
+
+Día 7 – Correcciones y Ajustes Finales
+
+Se realizaron correcciones relacionadas con:
+
+* Coherencia de los datos
+* Organización de estadísticas
+* Diseño visual
+* Optimización de gráficas
+* Estructura del proyecto
+
+Además, se agregaron referencias de las fuentes utilizadas y capturas de evidencia de los datasets consultados.
+
+
+Conclusión
+
+El desarrollo de este proyecto permitió fortalecer conocimientos relacionados con:
+
+* Desarrollo web
+* Diseño de interfaces
+* Visualización de datos
+* Estadísticas deportivas
+* Organización de información
+
+También permitió comprender la importancia del análisis comparativo y cómo los datos pueden representarse visualmente de una manera más clara e interactiva.
